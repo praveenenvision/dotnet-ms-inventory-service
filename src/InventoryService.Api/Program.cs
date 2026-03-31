@@ -47,6 +47,7 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory S
 
 app.UseCors();
 app.UseTraceIdMiddleware();
+app.UseCustomOpenTelemetry();
 app.MapControllers();
 
 app.Run();

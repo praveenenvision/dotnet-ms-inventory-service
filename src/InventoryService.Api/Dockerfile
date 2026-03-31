@@ -5,6 +5,7 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY nuget.config .
+COPY local-packages/ local-packages/
 COPY src/InventoryService.Domain/InventoryService.Domain.csproj src/InventoryService.Domain/
 COPY src/InventoryService.Application/InventoryService.Application.csproj src/InventoryService.Application/
 COPY src/InventoryService.Infrastructure/InventoryService.Infrastructure.csproj src/InventoryService.Infrastructure/
