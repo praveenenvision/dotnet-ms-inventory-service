@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using DotnetMsPoc.Shared.Events;
+using DotnetMsPoc.Shared.Messaging;
 
 namespace InventoryService.Tests.Application;
 

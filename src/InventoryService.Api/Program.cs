@@ -1,9 +1,11 @@
 using System.Reflection;
+using System.Text.Json;
 using InventoryService.Application.Interfaces;
 using InventoryService.Application.Services;
 using InventoryService.Domain.Interfaces;
-using InventoryService.Infrastructure.Messaging;
 using InventoryService.Infrastructure.Repositories;
+using DotnetMsPoc.Shared.Events;
+using DotnetMsPoc.Shared.Messaging;
 using DotnetMsPoc.Shared.Middleware;
 using DotnetMsPoc.Shared.Telemetry;
 
@@ -27,8 +29,23 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryAppService, InventoryAppService>();
-builder.Services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
-builder.Services.AddHostedService<OrderConfirmedConsumer>();
+builder.Services.AddEventPublisher(builder.Configuration);
+builder.Services.AddEventConsumer(
+    builder.Configuration,
+    queueName: "inventory_order_confirmed",
+    routingKeys: ["order.confirmed"],
+    handler: async (sp, routingKey, jsonBody) =>
+    {
+        var orderEvent = JsonSerializer.Deserialize<OrderConfirmedEvent>(jsonBody);
+        if (orderEvent != null)
+        {
+            var inventoryService = sp.GetRequiredService<IInventoryAppService>();
+            foreach (var item in orderEvent.Items)
+            {
+                await inventoryService.ReduceStockAsync(item.ProductId, item.Quantity, orderEvent.TraceId);
+            }
+        }
+    });
 
 builder.Services.AddCustomOpenTelemetry("InventoryService");
 

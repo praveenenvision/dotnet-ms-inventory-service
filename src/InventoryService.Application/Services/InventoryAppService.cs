@@ -3,6 +3,7 @@ using InventoryService.Application.Interfaces;
 using InventoryService.Application.Mappings;
 using InventoryService.Domain.Interfaces;
 using DotnetMsPoc.Shared.Events;
+using DotnetMsPoc.Shared.Messaging;
 using Microsoft.Extensions.Logging;
 
 namespace InventoryService.Application.Services;
