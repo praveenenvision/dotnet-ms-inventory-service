@@ -8,6 +8,7 @@ using DotnetMsPoc.Shared.Events;
 using DotnetMsPoc.Shared.Messaging;
 using DotnetMsPoc.Shared.Middleware;
 using DotnetMsPoc.Shared.Telemetry;
+using DotnetMsPoc.Shared.ServiceDiscovery;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,10 @@ builder.Services.AddEventConsumer(
 
 builder.Services.AddCustomOpenTelemetry("InventoryService");
 
+// Health checks & Service Discovery
+builder.Services.AddHealthChecks();
+builder.Services.AddConsulServiceDiscovery(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -66,5 +71,6 @@ app.UseCors();
 app.UseTraceIdMiddleware();
 app.UseCustomOpenTelemetry();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
